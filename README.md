@@ -26,8 +26,8 @@
 - [qb-target](https://github.com/BerkieBb/qb-target) - Targeting solution for the QBCore Framework
 - [qb-input](https://github.com/qbcore-framework/qb-input) - NUI input system for the QBCore Framework
 
-## Screenshots
-![Demo](https://streamable.com/ss5bw8)
+## Demo
+https://streamable.com/ss5bw8
 
 ## Features
 - Forge default document types
