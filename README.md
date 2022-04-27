@@ -36,12 +36,54 @@ https://streamable.com/ss5bw8
     3. Weapon License
     4. Lawyer Pass
 - Supports both qb-target or PolyZone
+- This resource uses the latest QBCore so needed items added automatically when resource starts but if you want to add the items to shared/items.lua, here you go.
+### shared/items.lua
+```
+["blank_card"] = {["name"] = "blank_card", ["label"] = "Blank Card", ["weight"] = 100, ["type"] = "item", ["image"] = "blank_card.png", ["unique"] = false, ["useable"] = false, ["shouldClose"] = false, ["combinable"] = nil, ["description"] = "This blank card can be turned into anything under a professional hands"},
+["blank_usb"] = {["name"] = "blank_usb", ["label"] = "Blank USB", ["weight"] = 100, ["type"] = "item", ["image"] = "usb_device.png", ["unique"] = false, ["useable"] = false, ["shouldClose"] = false, ["combinable"] = nil, ["description"] = "This blank USB stick can be turned into anything under a professional hands"},
+["usb"] = {["name"] = "usb", ["label"] = "USB", ["weight"] = 100, ["type"] = "item", ["image"] = "usb_device.png", ["unique"] = true, ["useable"] = false, ["shouldClose"] = false, ["combinable"] = nil, ["description"] = "This USB stick contains some information"},
+["corrupted_card"] = {["name"] = "corrupted_card", ["label"] = "?????", ["weight"] = 100, ["type"] = "item", ["image"] = "blank_card.png", ["unique"] = true, ["useable"] = false, ["shouldClose"] = false, ["combinable"] = nil, ["description"] = "?????"},
+```
 
 ## Installation
 ### Manual
 - Download the script and put it in the `[qb]` directory.
-- Add the following code to your qb-inventory/server/main.lua:102
+- Add the following line after your GetStashItems() function.
 ```
+exports('GetStashItems', GetStashItems)
+```
+- Example:
+```
+-- Stash Items
+local function GetStashItems(stashId)
+	local items = {}
+	local result = MySQL.Sync.fetchScalar('SELECT items FROM stashitems WHERE stash = ?', {stashId})
+	if result then
+		local stashItems = json.decode(result)
+		if stashItems then
+			for k, item in pairs(stashItems) do
+				local itemInfo = QBCore.Shared.Items[item.name:lower()]
+				if itemInfo then
+					items[item.slot] = {
+						name = itemInfo["name"],
+						amount = tonumber(item.amount),
+						info = item.info or "",
+						label = itemInfo["label"],
+						description = itemInfo["description"] or "",
+						weight = itemInfo["weight"],
+						type = itemInfo["type"],
+						unique = itemInfo["unique"],
+						useable = itemInfo["useable"],
+						image = itemInfo["image"],
+						slot = item.slot,
+					}
+				end
+			end
+		end
+	end
+	return items
+end
+
 exports('GetStashItems', GetStashItems)
 ```
 
